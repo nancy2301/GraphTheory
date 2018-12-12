@@ -9,20 +9,22 @@ class travelPath(object):
         self.OregonPorts = ["PDX", "RDM", "EUG", "MFR"]
         self.MontanaPorts = ["BIL", "BZN", "GTF", "FCA", "MSO", "HLN"]
         self.FinalPath = []
+        self.distanceGroup = []
+        self.distance = []
+        self.shortestPath = []
+        self.longestPath = []
+        self.longestConnection = []
         self.minimum = float('inf')
         self.maximum = 0
         self.maximum_network_length = 0
 
     def getRouteInfo(self):
-        flights = pd.read_csv(
-            '/Users/nancyjain/Documents/nancy/SeattleUniversity/1/DiscreetMathematics/project/December 2017 Flights.csv',
-            sep=',')
+        flights = pd.read_csv('/Users/nancyjain/Documents/nancy/SeattleUniversity/1/DiscreteMathematics/project/December 2017 Flights.csv',sep=',')
         flights1 = flights[flights['DISTANCE_GROUP'] < 8]
         flights2 = flights1[['ORIGIN', 'DEST', 'DISTANCE_GROUP', 'DISTANCE']]
         flights3 = flights2.drop_duplicates()
 
         dict = {}
-        count = 0
         for origin in flights3['ORIGIN'].values.tolist():
             if origin in dict:
                 continue
@@ -42,19 +44,24 @@ class travelPath(object):
             if destinationInfo.DEST in visited_Ports:
                 continue
 
-            if destinationInfo.DEST in destinationPort:
-                temp = (source, destinationInfo.DEST)
-                existing_Path.append(temp)
-                self.FinalPath.append(copy.deepcopy(existing_Path))
-                self.maximum = max(self.maximum, totalDistance)
-                self.minimum = min(self.minimum, totalDistance)
-                self.maximum_network_length = max(self.maximum_network_length, len(existing_Path))
-                existing_Path.pop()
-                continue
-
-            current_DG = current_DG + destinationInfo.DISTANCE_GROUP
             totalDistance = totalDistance + destinationInfo.DISTANCE
+            current_DG = current_DG + destinationInfo.DISTANCE_GROUP
             existing_Path.append((source, destinationInfo.DEST))
+
+            if destinationInfo.DEST in destinationPort:
+                self.FinalPath.append(copy.deepcopy(existing_Path))
+                self.distanceGroup.append(current_DG)
+                self.distance.append(totalDistance)
+                if totalDistance > self.maximum :
+                    self.longestPath = copy.deepcopy(existing_Path)
+                    self.maximum = totalDistance
+                if totalDistance < self.minimum :
+                    self.shortestPath = copy.deepcopy(existing_Path)
+                    self.minimum = totalDistance
+                if len(existing_Path) > self.maximum_network_length:
+                    self.longestConnection = copy.deepcopy(existing_Path)
+                    self.maximum_network_length = len(existing_Path)
+
             visited_Ports.append(destinationInfo.DEST)
             self.visitPort(destinationInfo.DEST, current_DG, visited_Ports, existing_Path,
                            destinationPort, totalDistance)
@@ -77,22 +84,22 @@ def main1():
 
     for i in range(0, len(path.MontanaPorts)):
         path.get_info_for_source(path.MontanaPorts[i], path.OregonPorts)
+        
+    for i in range(0, len(path.FinalPath)):
+        print(i+1, path.FinalPath[i], path.distance[i], path.distanceGroup[i])
 
-    for list in path.FinalPath:
-        print (list)
 
 
 def main2():
     path = travelPath()
     path.get_info_for_source("MFR", ["MSO"])
-    print (path.FinalPath)
-    print (path.minimum)
-    print (path.maximum)
-    network = []
-    for i in range(0, len(path.FinalPath)):
-        if path.maximum_network_length == len(path.FinalPath[i]):
-            network.append(path.FinalPath[i])
-    print (network)
+    print(path.FinalPath)
+    print(path.minimum)
+    print(path.shortestPath)
+    print(path.maximum)
+    print(path.longestPath)
+    print(path.maximum_network_length)
+    print(path.longestConnection)
 
 main1()
 #main2()
