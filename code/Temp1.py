@@ -15,7 +15,7 @@ class travelPath(object):
 
     def getRouteInfo(self):
         # read December 2017 Flights csv and store them in Pandas data frame flights
-        flights = pd.read_csv('/Users/nancyjain/Documents/nancy/SeattleUniversity/1/DiscreteMathematics/project/December 2017 Flights.csv',sep=',')
+        flights = pd.read_csv('../raw_data/December 2017 Flights.csv',sep=',')
 
         # filter the data by [DistanceGroup < 8] and name it as flights1 data frame
         flights1 = flights[flights['DISTANCE_GROUP'] < 8]
@@ -27,7 +27,7 @@ class travelPath(object):
         flights3 = flights2.drop_duplicates()
 
         # store the data in a dictionary with Origin as keys and Dest, Distance_Group and Distance as its values
-        # storing the data in a dictionary will enable the retrivel of the elements of a dictionary by its key
+        # storing the data in a dictionary will enable the retrieval of the elements of a dictionary by its key
         # time complexity of the retrieval will be O(1)
         dict = {}
         for origin in flights3['ORIGIN'].values.tolist():
@@ -83,7 +83,6 @@ class travelPath(object):
         visited_Ports.append(sourcePort)
         self.visitPort(sourcePort, 0, visited_Ports, existing_Path, destinationPorts, 0)
 
-
 def getAllFlightsOregonMontana():
     path = travelPath()
     for i in range(0, len(path.OregonPorts)):
@@ -93,13 +92,10 @@ def getAllFlightsOregonMontana():
         path.get_info_for_source(path.MontanaPorts[i], path.OregonPorts)
 
     ans = []
-    #print("All paths between Oregon and Montana are: ")
-    #print("S.No         Paths                   Distance                DistanceGroup")
     for i in range(0, len(path.FinalPath)):
         ans.append([i+1, path.FinalPath[i], path.distance[i], path.distanceGroup[i]])
-
-    return ans
-
+    all_flights = pd.DataFrame(ans, columns=['S.No','PATH','DISTANCE','DISTANCE GROUP'])
+    return all_flights
 
 def getPathsMedfordMissoula(source, destination):
     minimum = float('inf')
@@ -111,7 +107,8 @@ def getPathsMedfordMissoula(source, destination):
     paths = getAllFlightsOregonMontana()
     ans = []
 
-    for row in paths:
+    for index, row in paths.iterrows():
+        #print(row[1][-1])
         if row[1][0][0] in source :
             if row[1][-1][-1] in destination:
                 ans.append([row[1], row[2], row[3]])
@@ -124,15 +121,14 @@ def getPathsMedfordMissoula(source, destination):
                 if len(row[1]) > maximum_network_length:
                     longestConnection = copy.deepcopy(row[1])
                     maximum_network_length = len(row[1])
-    finalResult = ["All the paths between MFR and MSO are : ",ans, "Longest path is : ", longestPath, "Maximum distance is : ", maximum, "Shortest path is : ",shortestPath, "Minimum distance is : ", minimum, "Path with maximum network is : ",longestConnection, "Length of maximum network is : ",maximum_network_length]
+    flights_M2M = pd.DataFrame(ans, columns=['PATH','DISTANCE','DISTANCE GROUP'])
+    finalResult = ["All the paths between MFR and MSO are : ",flights_M2M, "Longest path is : ", longestPath, "Maximum distance is : ", maximum, "Shortest path is : ",shortestPath, "Minimum distance is : ", minimum, "Path with maximum network is : ",longestConnection, "Length of maximum network is : ",maximum_network_length]
     return finalResult
 
-
 def main():
-    print ("S.No        PATH                    DISTANCE                    DISTANCE GROUP")
-    for ans in getAllFlightsOregonMontana():
-        print ans
-
+    print(getAllFlightsOregonMontana())
     for ans in getPathsMedfordMissoula("MFR", "MSO"):
-        print ans
+       print(ans)
+
+main()
 
