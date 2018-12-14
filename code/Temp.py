@@ -1,7 +1,6 @@
 import pandas as pd
 import copy
 
-
 class travelPath(object):
 
     def __init__(self):
@@ -19,23 +18,21 @@ class travelPath(object):
         self.maximum_network_length = 0
 
     def getRouteInfo(self):
-        flights = pd.read_csv('/Users/nancyjain/Documents/nancy/SeattleUniversity/1/DiscreteMathematics/project/December 2017 Flights.csv',sep=',')
-        flights1 = flights[flights['DISTANCE_GROUP'] < 8]
-        flights2 = flights1[['ORIGIN', 'DEST', 'DISTANCE_GROUP', 'DISTANCE']]
-        flights3 = flights2.drop_duplicates()
+        flights = pd.read_csv('../raw_data/December 2017 Flights.csv',sep=',')
+        flights = flights[flights['DISTANCE_GROUP'] < 8]
+        flights = flights[['ORIGIN', 'DEST', 'DISTANCE_GROUP', 'DISTANCE']]
+        flights = flights.drop_duplicates()
 
         dict = {}
-        for origin in flights3['ORIGIN'].values.tolist():
+        for origin in flights['ORIGIN'].values.tolist():
             if origin in dict:
                 continue
-            flights4 = flights3[flights3['ORIGIN'] == origin]
-            flights5 = flights4[['DEST', 'DISTANCE_GROUP', 'DISTANCE']]
-            dict[origin] = list(flights5.itertuples(index=False, name='destinationInfo'))
-
+            flights2 = flights[flights['ORIGIN'] == origin]
+            flights2 = flights2[['DEST', 'DISTANCE_GROUP', 'DISTANCE']]
+            dict[origin] = list(flights2.itertuples(index=False, name='destinationInfo'))
         return dict
 
     def visitPort(self, source, current_DG, visited_Ports, existing_Path, destinationPort, totalDistance):
-
         route_list = self.route_info[source]
         for destinationInfo in route_list:
             if (current_DG + destinationInfo.DISTANCE_GROUP) >= 8:
@@ -76,8 +73,7 @@ class travelPath(object):
         visited_Ports.append(sourcePort)
         self.visitPort(sourcePort, 0, visited_Ports, existing_Path, destinationPorts, 0)
 
-
-def main1():
+def getAllFlightsOregonMontana():
     path = travelPath()
     for i in range(0, len(path.OregonPorts)):
         path.get_info_for_source(path.OregonPorts[i], path.MontanaPorts)
@@ -88,18 +84,19 @@ def main1():
     for i in range(0, len(path.FinalPath)):
         print(i+1, path.FinalPath[i], path.distance[i], path.distanceGroup[i])
 
-
-
-def main2():
+def getPathsMedfordMissoula():
     path = travelPath()
     path.get_info_for_source("MFR", ["MSO"])
-    print(path.FinalPath)
-    print(path.minimum)
-    print(path.shortestPath)
-    print(path.maximum)
-    print(path.longestPath)
-    print(path.maximum_network_length)
-    print(path.longestConnection)
+    print("Final Path " + str(path.FinalPath))
+    print("Minimum Path " + str(path.minimum))
+    print("Shortest Path " + str(path.shortestPath))
+    print("Maximum Path " + str(path.maximum))
+    print("Longest Path " + str(path.longestPath))
+    print("Maximum Network Length " + str(path.maximum_network_length))
+    print("Longest Connection " + str(path.longestConnection))
 
-main1()
-#main2()
+def main():
+    getAllFlightsOregonMontana()
+    getPathsMedfordMissoula()
+
+main()
