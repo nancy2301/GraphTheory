@@ -98,12 +98,15 @@ def getAllFlightsOregonMontana():
     return all_flights
 
 def getPathsMedfordMissoula(source, destination):
+    # initialize variable
     minimum = float('inf')
     shortestPath = []
     maximum = 0
     longestPath = []
     maximum_network_length = 0
     longestConnection = []
+    
+    # calculate paths between MFR and MSO from PART 1
     paths = getAllFlightsOregonMontana()
     ans = []
 
@@ -111,13 +114,20 @@ def getPathsMedfordMissoula(source, destination):
         #print(row[1][-1])
         if row[1][0][0] in source :
             if row[1][-1][-1] in destination:
+                # if source is MFR and destination is MSO , append it to ans
                 ans.append([row[1], row[2], row[3]])
+                
+                # Get the maximum distance and path with maximum distance
                 if row[2] > maximum:
                     longestPath = copy.deepcopy(row[1])
                     maximum = row[2]
+                    
+                # Get the minimum distance and path with minimum distance
                 if row[2] < minimum:
                     shortestPath = copy.deepcopy(row[1])
                     minimum = row[2]
+                    
+                # Get the maximum network length and path with maximum network
                 if len(row[1]) > maximum_network_length:
                     longestConnection = copy.deepcopy(row[1])
                     maximum_network_length = len(row[1])
