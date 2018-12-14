@@ -106,10 +106,11 @@ def getPathsMedfordMissoula(source, destination):
     maximum_network_length = 0
     longestConnection = []
     
-    # calculate paths between MFR and MSO from PART 1
+    # calculate and store all paths between Oregon and Montana from PART 1
     paths = getAllFlightsOregonMontana()
     ans = []
-
+    
+    # from paths find all paths from MFR to MSO
     for index, row in paths.iterrows():
         #print(row[1][-1])
         if row[1][0][0] in source :
